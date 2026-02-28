@@ -74,3 +74,33 @@ body{
     align-items: center;
     gap: 6px;
 }
+
+#userinput{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+#Title{
+     text-align: center;
+     margin-top: 24px;
+    
+}
+
+#Feedbox{
+    width: min(680px, calc(100% - 360px));
+    margin: 20px 120px 20px 200px;
+    border: 2px solid red;
+    border-radius: 20px;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    font-family: 'Space Mono', monospace;
+    position: relative;
+}
+
+
+
+
+
+
+
