@@ -24,7 +24,6 @@ body{
     border-left: 2px solid red;
 }
 .vertical-label{
-    display: flex;
     flex-direction: column;
      position: absolute;
     left: 170px;
@@ -34,6 +33,31 @@ body{
     color: red;
     white-space: nowrap;
     gap: 4px;
+    display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+}
+.vertical-label span {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.vertical-label .label-static{
+    cursor: default;
+    pointer-events: none;
+    padding: 0;
+}
+.vertical-label .label-static h6{
+    margin: 0;
+}
+.vertical-label span:hover {
+  background-color: black;
+  color: red;
 }
 #brand{
     display: flex;
