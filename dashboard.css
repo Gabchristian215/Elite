@@ -56,8 +56,8 @@ body{
     margin: 0;
 }
 .vertical-label span:hover {
-  background-color: black;
-  color: red;
+  background-color: red;
+  color: white;
 }
 #brand{
     display: flex;
@@ -86,16 +86,97 @@ body{
      margin-top: 24px;
     
 }
-
-#Feedbox{
-    width: min(680px, calc(100% - 360px));
-    margin: 20px 120px 20px 200px;
+.Box{
+display: flex;
+width: 230px;
+height: 300px;
+border: 2px solid red;
+padding: 100px;
+margin: 230px;
+margin-top: 210px;
+border-radius: 10px;
+}
+p{
+    margin-top: -80px;
+    margin-left: -80px;
+}
+.minibox{
+    cursor:pointer;
+    display: inline-block;
     border: 2px solid red;
-    border-radius: 20px;
-    padding: 20px 30px;
-    box-sizing: border-box;
-    font-family: 'Space Mono', monospace;
-    position: relative;
+    padding: 5px 5px;
+    margin-right: 10px;
+    border-radius: 10px;
+    color: red;
+
+}
+.minibox:hover{
+    background-color: red;
+    color: white;
+}
+.minibox:focus{
+    background-color: red;
+    color: white;
+}
+.Box hr{
+ position: absolute;
+  left: 20px;
+  right: 10px;
+  top: 70%;
+  margin: 0;
+  margin-left: 210px;
+  height: 2px;
+  border: none;
+  background: red;
+  width: 434px;
+}
+   /* ─── CSS VARIABLES ─────────────────────── */
+:root {
+  --black:    #080808;
+  --black3:   #161616;
+  --red:      #e01020;
+  --red-hot:  #ff1a2e;
+  --red-dim:  #8a0a18;
+  --border:   rgba(224,16,32,0.15);
+}
+
+/* ─── BASE ──────────────────────────────── */
+body {
+  background: var(--black);
+  min-height: 100vh;
+}
+
+/* ─── RADIAL GLOW LAYER ─────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 85% 10%, rgba(180,0,20,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 5%  90%, rgba(180,0,20,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 30% at 50% 50%, rgba(180,0,20,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ─── GRID LINES LAYER ──────────────────── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg,  rgba(224,16,32,0.028) 0px, transparent 1px, transparent 44px),
+    repeating-linear-gradient(90deg, rgba(224,16,32,0.028) 0px, transparent 1px, transparent 44px);
+  pointer-events: none;
+}
+
+/* ─── DIAGONAL SLASH ACCENT ─────────────── */
+.slash-bg {
+  position: fixed;
+  top: -20%; right: -10%;
+  width: 55vw; height: 140vh;
+  background: linear-gradient(170deg, rgba(224,16,32,0.04) 0%, transparent 50%);
+  border-left: 1px solid rgba(224,16,32,0.08);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  z-index: 0;
 }
 
 
