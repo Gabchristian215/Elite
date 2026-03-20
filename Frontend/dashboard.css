@@ -1,183 +1,48 @@
+*{
+  margin: 0;
+  padding: 0;
+}
 body{
-    margin: 0;
-
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  display: grid;
+  grid-template-columns: auto 1fr;
 }
-
-#head{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    padding: 16px 24px;
-    border-bottom: 2px solid red;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-    color: red;
-}
-#head::after{
-    content: "";
-    position: absolute;
-    left: 200px;
-    top: 100%;
-    height: calc(100vh - 100%);
-    border-left: 2px solid red;
-}
-.vertical-label{
-    flex-direction: column;
-     position: absolute;
-    left: 170px;
-    top: calc(100% + 12px);
-    transform: translateX(-110%);
-    font-size: 12px;
-    color: red;
-    white-space: nowrap;
-    gap: 4px;
-    display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  font-weight: 700;
-}
-.vertical-label span {
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.vertical-label .label-static{
-    cursor: default;
-    pointer-events: none;
-    padding: 0;
-}
-.vertical-label .label-static h6{
-    margin: 0;
-}
-.vertical-label span:hover {
+#sidebar{
+  box-sizing: border-box;
+  height: 100vh;
+  width: 250px;
+  padding: 5px 2em;
   background-color: red;
+  border-right: 1px soild var(--line-clr);
+}
+#sidebar ul{
+  list-style: none;
+    display: flex;
+  flex-direction: column;
+  gap: .5em;
+}
+#sidebar li {
+  margin-bottom: 25px;
+  cursor: pointer;
   color: white;
 }
-#brand{
-    display: flex;
-    flex-direction: column;
-}
-
-#brand h1,
-#brand h6{
-    margin: 0;
-}
-.notif-btn,
-.nav-item{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-#userinput{
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-#Title{
-     text-align: center;
-     margin-top: 24px;
-    
-}
-.Box{
-display: flex;
-width: 230px;
-height: 300px;
-border: 2px solid red;
-padding: 100px;
-margin: 230px;
-margin-top: 210px;
+#sidebar li:hover{
+background-color: black;
 border-radius: 10px;
 }
-p{
-    margin-top: -80px;
-    margin-left: -80px;
-}
-.minibox{
-    cursor:pointer;
-    display: inline-block;
-    border: 2px solid red;
-    padding: 5px 5px;
-    margin-right: 10px;
-    border-radius: 10px;
-    color: red;
 
-}
-.minibox:hover{
-    background-color: red;
-    color: white;
-}
-.minibox:focus{
-    background-color: red;
-    color: white;
-}
-.Box hr{
- position: absolute;
-  left: 20px;
-  right: 10px;
-  top: 70%;
-  margin: 0;
-  margin-left: 210px;
-  height: 2px;
-  border: none;
-  background: red;
-  width: 434px;
-}
-   /* ─── CSS VARIABLES ─────────────────────── */
-:root {
-  --black:    #080808;
-  --black3:   #161616;
-  --red:      #e01020;
-  --red-hot:  #ff1a2e;
-  --red-dim:  #8a0a18;
-  --border:   rgba(224,16,32,0.15);
+#sidebar a, #sidebar{
+  border-radius: 10px;
+  padding: .85em;
+  display: flex;
+  align-items: start;
+  gap: 1em;
+  
 }
 
-/* ─── BASE ──────────────────────────────── */
-body {
-  background: var(--black);
-  min-height: 100vh;
-}
-
-/* ─── RADIAL GLOW LAYER ─────────────────── */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 70% 55% at 85% 10%, rgba(180,0,20,0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 5%  90%, rgba(180,0,20,0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 30% 30% at 50% 50%, rgba(180,0,20,0.05) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* ─── GRID LINES LAYER ──────────────────── */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0;
-  background-image:
-    repeating-linear-gradient(0deg,  rgba(224,16,32,0.028) 0px, transparent 1px, transparent 44px),
-    repeating-linear-gradient(90deg, rgba(224,16,32,0.028) 0px, transparent 1px, transparent 44px);
-  pointer-events: none;
-}
-
-/* ─── DIAGONAL SLASH ACCENT ─────────────── */
-.slash-bg {
-  position: fixed;
-  top: -20%; right: -10%;
-  width: 55vw; height: 140vh;
-  background: linear-gradient(170deg, rgba(224,16,32,0.04) 0%, transparent 50%);
-  border-left: 1px solid rgba(224,16,32,0.08);
-  transform: rotate(-8deg);
-  pointer-events: none;
-  z-index: 0;
-}
 
 
 
