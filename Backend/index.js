@@ -1,5 +1,11 @@
 import 'dotenv/config';
+
 import cron from 'node-cron';
+import {MongoClient} from "mongodb";
+
+const uri = process.env.MONGO_URI;
+const client = new MongoClient(uri);
+
 
 async function getSealed(set = 'scarlet', limit = '1') {
   try{
@@ -16,7 +22,7 @@ return data;
 }
   const result = await getSealed();
    const items = result?.data ?? [];
-   
+
 
   const filtered = items.map(item =>({
     name: item.name,
@@ -28,9 +34,24 @@ return data;
   id: item.id
 }));
 
+async function saveData() {
+  try {
+    await client.connect();
+    const db = client.db("elite") // database name
+    const collection = db.collection("products") // collection name
 
-cron.schedule('* 11,20 * * *', () =>{ 
+    await collection.insertMany(filtered);
+    console.log("DATA SAVED!!")
+  } catch(error){
+    console.error(err);
+  } finally{
+    await client.close();
+  }
+}
+
+cron.schedule('* 11,20 * * *', () =>{
 console.log(filtered);
 });
 
-
+console.log(filtered);
+saveData();
