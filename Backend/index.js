@@ -5,6 +5,9 @@ import {MongoClient} from "mongodb";
 
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
+const db = client.db("elite") // database name
+    const collection = db.collection("products") // collection name
+
 
 
 async function getSealed(set = 'scarlet', limit = '1') {
@@ -37,21 +40,57 @@ return data;
 async function saveData() {
   try {
     await client.connect();
-    const db = client.db("elite") // database name
-    const collection = db.collection("products") // collection name
-
     await collection.insertMany(filtered);
     console.log("DATA SAVED!!")
   } catch(error){
-    console.error(err);
+    console.error(error);
   } finally{
     await client.close();
   }
 }
 
-cron.schedule('* 11,20 * * *', () =>{
-console.log(filtered);
-});
+async function comparePrices(){
+  await client.connect();
+ const oldItem = await collection.findOne({tcgPlayerId: "478275"})
 
+if (!oldItem) {
+    console.log("Item not found in DB");
+    return;
+}
+
+ if(!oldItem){
+  console.log("missing price data, skipping...");
+  return;
+ }
+
+ const oldPrice = oldItem.price;
+ const newPrice = items.unopenedPrice;
+
+ if(oldPrice < newPrice){
+  console.log(`${items.name} increased`);
+
+
+ } else if(oldPrice > newPrice){
+  console.log(`${items.name} decreased`);
+ } else{
+  console.log('price is the same');
+ }
+if(oldPrice !== newPrice){
+ await collection.updateOne({tcgPlayerId: items.tcgPlayerId },
+  {$set: {price: newPrice} }
+);
+} 
+}
+
+
+async function run(){
 console.log(filtered);
-saveData();
+await saveData();
+await comparePrices();
+await client.close()
+}
+run();
+/*cron.schedule('* 11,20 * * *', () =>{
+run();
+});
+*/
