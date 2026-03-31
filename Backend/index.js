@@ -51,35 +51,40 @@ async function saveData() {
 
 async function comparePrices(){
   await client.connect();
- const oldItem = await collection.findOne({tcgPlayerId: "478275"})
+  const targetId = "478275";
+  const oldItem = await collection.findOne({ tcgPlayerId: targetId });
 
-if (!oldItem) {
+  if (!oldItem) {
     console.log("Item not found in DB");
     return;
-}
+  }
 
- if(!oldItem){
-  console.log("missing price data, skipping...");
-  return;
- }
+  const freshItem = items.find(
+    item => String(item.tcgPlayerId) === String(targetId)
+  );
 
- const oldPrice = oldItem.price;
- const newPrice = items.unopenedPrice;
+  if (!freshItem) {
+    console.log("Fresh API item not found");
+    return;
+  }
 
- if(oldPrice < newPrice){
-  console.log(`${items.name} increased`);
+  const oldPrice = oldItem.price;
+  const newPrice = freshItem.unopenedPrice;
 
+  if (oldPrice < newPrice) {
+    console.log(`${freshItem.name} increased`);
+  } else if (oldPrice > newPrice) {
+    console.log(`${freshItem.name} decreased`);
+  } else {
+    console.log('price is the same');
+  }
 
- } else if(oldPrice > newPrice){
-  console.log(`${items.name} decreased`);
- } else{
-  console.log('price is the same');
- }
-if(oldPrice !== newPrice){
- await collection.updateOne({tcgPlayerId: items.tcgPlayerId },
-  {$set: {price: newPrice} }
-);
-} 
+  if (oldPrice !== newPrice) {
+    await collection.updateOne(
+      { tcgPlayerId: String(targetId) },
+      { $set: { price: newPrice } }
+    );
+  }
 }
 
 
@@ -90,7 +95,7 @@ await comparePrices();
 await client.close()
 }
 run();
-/*cron.schedule('* 11,20 * * *', () =>{
+/*cron.schedule('0 2 * * * *', () =>{
 run();
 });
 */
