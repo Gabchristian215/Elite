@@ -1,14 +1,16 @@
 import 'dotenv/config';
-
+import express from "express";
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
 
+const app = express();
+const port = 3000;
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 const db = client.db("elite") // database name
-    const collection = db.collection("products") // collection name
+const collection = db.collection("products") // collection name
 
-
+/// script test 
 
 async function getSealed(set = 'scarlet', limit = '1') {
   try{
