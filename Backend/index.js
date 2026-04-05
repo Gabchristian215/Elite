@@ -12,7 +12,7 @@ const collection = db.collection("products") // collection name
 
 /// script test 
 
-async function getSealed(set = 'scarlet', limit = '1') {
+async function getSealed(set = 'scarlet', limit = 1) {
   try{
   const response = await fetch(`https://www.pokemonpricetracker.com/api/v2/sealed-products?language=english&set=${set}&limit=${limit}`,{
     headers: {
