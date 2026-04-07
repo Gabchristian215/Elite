@@ -90,10 +90,10 @@ async function comparePrices(targetId, items){
   }
 }
 
-const DISCORD_BOT_TOKEN = 'MTQ4NjczNTI4ODE1MDUyNDAwOA.GYjJtn.ijW6BvXuFZvqHt61vWdH-ub3-UJHPPJMcwgNQQ';
+const botToken = process.env.DISCORD_BOT_TOKEN;
 const DISCORD_CHANNEL_ID = '1486736736162680934';
 const clients = new Client({ intents: [GatewayIntentBits.Guilds] })
-await clients.login(DISCORD_BOT_TOKEN);
+await clients.login(botToken);
 const channel = await clients.channels.fetch(DISCORD_CHANNEL_ID);
 
 async function getAlert(targetId, items) {
@@ -162,8 +162,6 @@ async function run() {
    await comparePrices();
 }
 
+cron.schedule('0 0 2 * * *', () =>{
 run();
-
-/*cron.schedule('0 0 2 * * *', () =>{
-run();
-}); */
+}); 
