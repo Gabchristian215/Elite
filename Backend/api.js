@@ -25,7 +25,9 @@ async function getSealed(set, limit = "5") {
     );
 
     const data = await response.json();
+    console.log(`Full API response:`, data);
 const item = data?.data ?? [];
+console.log(`getSealed returned ${item.length} items`);
   return item.map(item =>({
     name: item.name,
   setName: item.setName,
@@ -37,6 +39,7 @@ const item = data?.data ?? [];
 }));
   } catch (error) {
     console.log("couldnt catch api key", error.message);
+    return [];
   }
 }
 
@@ -67,7 +70,8 @@ async function comparePrices(targetId, items){
   );
 
   if (!freshItem) {
-    console.log("Fresh API item not found");
+    const apiIds = items.map(item => String(item.tcgPlayerId)).slice(0, 20).join(", ");
+    console.log(`Fresh API item not found. DB tcgPlayerId=${targetId}; API tcgPlayerIds(sample)=[${apiIds}]`);
     return;
   }
 
@@ -105,7 +109,8 @@ async function getAlert(targetId, items) {
    const freshItem = items.find(
     item => String(item.tcgPlayerId) === String(targetId));
     if (!freshItem) {
-    console.log("Fresh API item not found");
+    const apiIds = items.map(item => String(item.tcgPlayerId)).slice(0, 20).join(", ");
+    console.log(`Fresh API item not found. DB tcgPlayerId=${targetId}; API tcgPlayerIds(sample)=[${apiIds}]`);
     return;
   }
   const oldPrice = oldItem.price;
@@ -116,8 +121,7 @@ await channel.send(`ETB is now ${newPrice}`);
 console.log('discord message was sent')
 }
 }
-await getAlert(targetId, items);
-await clients.destroy();
+
 
  
 app.get("/getSealed", async (req, res) => {
@@ -152,16 +156,35 @@ try{
 }
 })
 
+async function run(set, limit = "5") {
+  const items = await getSealed(set, limit);
+  const fetchedSetNames = [...new Set(items.map(item => item.setName).filter(Boolean))];
 
-app.listen(port, () => {
-console.log(`Server running on ${port}` )
-});
+  if (fetchedSetNames.length === 0) {
+    console.log(`No set names found from API for set=${set}`);
+    return;
+  }
 
-async function run() {
-   await getSealed(set, limit);
-   await comparePrices();
+  const savedProducts = await collection.find({ setName: { $in: fetchedSetNames } }).toArray();
+
+  for (const savedProduct of savedProducts) {
+    await comparePrices(savedProduct.tcgPlayerId, items);
+    await getAlert(savedProduct.tcgPlayerId, items);
+  }
 }
 
-cron.schedule('0 0 2 * * *', () =>{
-run();
-}); 
+async function start() {
+  await client.connect();
+  console.log("Mongo connected");
+
+  app.listen(port, () => {
+    console.log(`Server running on ${port}` )
+  });
+
+
+run("151", "5");
+}
+start().catch(error => {
+  console.error("Startup failed:", error);
+  process.exit(1);
+});
