@@ -178,12 +178,22 @@ async function start() {
   console.log("Mongo connected");
 
   app.listen(port, () => {
-    console.log(`Server running on ${port}` )
+    console.log(`Server running on ${port}`);
   });
 
+  // optional immediate run on boot
+  await run("151", "5");
 
-run("151", "5");
+  // daily cron run
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      await run("151", "5");
+    } catch (error) {
+      console.error("Daily run failed:", error);
+    }
+  });
 }
+
 start().catch(error => {
   console.error("Startup failed:", error);
   process.exit(1);
