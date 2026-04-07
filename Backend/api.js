@@ -47,13 +47,10 @@ console.log(`getSealed returned ${item.length} items`);
 async function saveData(product) {
   try {
    if (!Array.isArray(product) || product.length === 0) return;
-    await client.connect();
     await collection.insertMany(product);
     console.log("DATA SAVED!!")
   } catch(error){
     console.error(error);
-  } finally{
-    await client.close();
   }
 }
 
@@ -145,31 +142,36 @@ try{
       return res.status(400).json({ error: "set is required" });
     }
     const product = await getSealed(set, limit);
+    const productWithSetSlug = product.map(item => ({ ...item, setSlug: set }));
 
-     if (!Array.isArray(product) || product.length === 0) {
+     if (!Array.isArray(productWithSetSlug) || productWithSetSlug.length === 0) {
       return res.status(400).json({ error: "No products found to save" });
     }
-  await saveData(product);
+  await saveData(productWithSetSlug);
   res.status(200).json({ message: "saved to Database" }); // sends to frontend
 } catch(error){
   res.status(500).json({error: error.message || "cannot save to Database"})
 }
 })
 
-async function run(set, limit = "5") {
-  const items = await getSealed(set, limit);
-  const fetchedSetNames = [...new Set(items.map(item => item.setName).filter(Boolean))];
+async function run(limit = "5") {
+  const userSetSlugs = await collection.distinct("setSlug", {
+    setSlug: { $exists: true, $ne: "" }
+  });
 
-  if (fetchedSetNames.length === 0) {
-    console.log(`No set names found from API for set=${set}`);
+  if (!userSetSlugs.length) {
+    console.log("No user set slugs found. Save products first.");
     return;
   }
 
-  const savedProducts = await collection.find({ setName: { $in: fetchedSetNames } }).toArray();
+  for (const setSlug of userSetSlugs) {
+    const items = await getSealed(setSlug, limit);
+    const savedProducts = await collection.find({ setSlug }).toArray();
 
-  for (const savedProduct of savedProducts) {
-    await comparePrices(savedProduct.tcgPlayerId, items);
-    await getAlert(savedProduct.tcgPlayerId, items);
+    for (const savedProduct of savedProducts) {
+      await comparePrices(savedProduct.tcgPlayerId, items);
+      await getAlert(savedProduct.tcgPlayerId, items);
+    }
   }
 }
 
@@ -182,12 +184,14 @@ async function start() {
   });
 
   // optional immediate run on boot
-  await run("151", "5");
+  await run("5");
+ 
 
   // daily cron run
   cron.schedule("0 0 * * *", async () => {
     try {
-      await run("151", "5");
+      await run("5");
+     
     } catch (error) {
       console.error("Daily run failed:", error);
     }
