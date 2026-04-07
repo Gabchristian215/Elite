@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
+import {Client, GatewayIntentBits} from 'discord.js'
 
 const app = express();
 const port = 3000;
@@ -52,6 +53,72 @@ async function saveData(product) {
     await client.close();
   }
 }
+
+async function comparePrices(targetId, items){
+  const oldItem = await collection.findOne({ tcgPlayerId: targetId });
+
+  if (!oldItem) {
+    console.log("Item not found in DB");
+    return;
+  }
+
+  const freshItem = items.find(
+    item => String(item.tcgPlayerId) === String(targetId)
+  );
+
+  if (!freshItem) {
+    console.log("Fresh API item not found");
+    return;
+  }
+
+  const oldPrice = oldItem.price;
+  const newPrice = freshItem.unopenedPrice ?? freshItem.price;
+
+  if (oldPrice < newPrice) {
+    console.log(`${freshItem.name} increased`);
+  } else if (oldPrice > newPrice) {
+    console.log(`${freshItem.name} decreased`);
+  } else {
+    console.log('price is the same');
+  }
+
+  if (oldPrice !== newPrice) {
+    await collection.updateOne(
+      { tcgPlayerId: String(targetId) },
+      { $set: { price: newPrice } }
+    );
+  }
+}
+
+const DISCORD_BOT_TOKEN = 'MTQ4NjczNTI4ODE1MDUyNDAwOA.GYjJtn.ijW6BvXuFZvqHt61vWdH-ub3-UJHPPJMcwgNQQ';
+const DISCORD_CHANNEL_ID = '1486736736162680934';
+const clients = new Client({ intents: [GatewayIntentBits.Guilds] })
+await clients.login(DISCORD_BOT_TOKEN);
+const channel = await clients.channels.fetch(DISCORD_CHANNEL_ID);
+
+async function getAlert(targetId, items) {
+  const oldItem = await collection.findOne({ tcgPlayerId: targetId });
+   if (!oldItem) {
+    console.log("Item not found in DB");
+    return;
+  }
+   const freshItem = items.find(
+    item => String(item.tcgPlayerId) === String(targetId));
+    if (!freshItem) {
+    console.log("Fresh API item not found");
+    return;
+  }
+  const oldPrice = oldItem.price;
+  const newPrice = freshItem.unopenedPrice ?? freshItem.price;
+if (oldPrice !== newPrice) {
+    console.log('about to send message...')
+await channel.send(`ETB is now ${newPrice}`);
+console.log('discord message was sent')
+}
+}
+await getAlert(targetId, items);
+await clients.destroy();
+
  
 app.get("/getSealed", async (req, res) => {
     try{
@@ -90,5 +157,13 @@ app.listen(port, () => {
 console.log(`Server running on ${port}` )
 });
 
-// have data saved to mongo db
-// nodemon Backend/api.js
+async function run() {
+   await getSealed(set, limit);
+   await comparePrices();
+}
+
+run();
+
+/*cron.schedule('0 0 2 * * *', () =>{
+run();
+}); */
