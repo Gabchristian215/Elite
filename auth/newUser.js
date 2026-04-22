@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken"
 import User from './userModel.js';
 
 export const signup = async (req, res, next) =>{
@@ -17,4 +18,5 @@ res.status(201).json({
     }
 };
 
-
+// change user.create for better security
+// add jws look at notes
