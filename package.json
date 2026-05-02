@@ -1,8 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node auth/server.js",
+    "dev": "nodemon auth/server.js"
   },
   "dependencies": {
     "axios": "^1.13.6",

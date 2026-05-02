@@ -22,7 +22,8 @@ email: {
 },
 password: {
     type: String,
-    required: true
+    required: true,
+    select: false
 }
 })
 userInfo.pre('save', async function(next) {
@@ -30,6 +31,10 @@ userInfo.pre('save', async function(next) {
 
     this.password = await bcryptjs.hash(this.password, 12);
 })
+
+userInfo.methods.correctPassword = async function(candidatePassword, userPassword){
+    return await bcryptjs.compare(candidatePassword, userPassword);
+}
 
 
 
