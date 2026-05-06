@@ -28,23 +28,23 @@ export const signup = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
     try {
-        const {email, password} = req.body;
-         // 1) check if email and password exist
-        if(!email || !password){
+        const {username, password} = req.body;
+         // 1) check if username and password exist
+        if(!username || !password){
             return res.status(400).json({
                 status: "error",
-                message: "invalid email or password"
+                message: "invalid username or password"
             });
         }
 
-        const user = await User.findOne({email}).select('+password');
+        const user = await User.findOne({username}).select('+password');
         console.log(user);
         
         //2) check if user exist &&  password is correct
         if(!user || !(await user.correctPassword(password, user.password))){
             return res.status(401).json({
                 status: "error",
-                message: "invalid email or password"
+                message: "invalid username or password"
             });
         }
          //3) if everything is ok, send token to client
