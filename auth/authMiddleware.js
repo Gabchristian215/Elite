@@ -46,8 +46,14 @@ decoded = await promisify(jwt.verify)(token,process.env.jwtSecret)
      }
 
     //check if user password was changed after token was issued 
-    
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return res.status(401).json({
+        status: "error",
+        message: "user recently change password please login again"
+      })
+    }
 
-
+// grant access to protected route
+req.user = currentUser;
   next(); // move to next middleware if token exists
 };
