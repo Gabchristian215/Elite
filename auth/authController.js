@@ -60,4 +60,8 @@ export const login = async (req, res, next) => {
             message: err.message
         });
     }
+    req.body = User
+    next();
 };
+
+

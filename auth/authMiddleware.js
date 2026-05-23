@@ -57,3 +57,16 @@ decoded = await promisify(jwt.verify)(token,process.env.jwtSecret)
 req.user = currentUser;
   next(); // move to next middleware if token exists
 };
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        status: "error",
+        message: "you do not have permission to perform this action"
+      });
+    }
+
+    next();
+  };
+};

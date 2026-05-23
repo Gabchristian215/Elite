@@ -22,6 +22,11 @@ email: {
     required: true,
     unique: true
 },
+role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user"
+},
 password: {
     type: String,
     required: true,
@@ -35,6 +40,7 @@ userInfo.pre('save', async function(next) {
     this.password = await bcryptjs.hash(this.password, 12);
     this.passwordChangedAt = new Date(Date.now() - 1000);
 })
+
 
 userInfo.methods.correctPassword = async function(candidatePassword, userPassword){
     return await bcryptjs.compare(candidatePassword, userPassword);
@@ -53,9 +59,6 @@ userInfo.methods.changedPasswordAfter = function(JWTTimestamp){
 const User = mongoose.model('User', userInfo);
 
 export default User;
-
-
-
 
 
 
