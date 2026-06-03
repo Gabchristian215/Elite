@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs';
+import crypto from 'crypto';
 
 
 
@@ -32,10 +33,13 @@ password: {
     required: true,
     select: false
 },
-passwordChangedAt: Date
+passwordChangedAt: Date,
+
+passwordResetToken: String,
+passwordResetExpires: Date
 })
-userInfo.pre('save', async function(next) {
-    if(!this.isModified("password")) return next();
+userInfo.pre('save', async function() {
+    if(!this.isModified("password")) return;
 
     this.password = await bcryptjs.hash(this.password, 12);
     this.passwordChangedAt = new Date(Date.now() - 1000);
@@ -53,6 +57,16 @@ userInfo.methods.changedPasswordAfter = function(JWTTimestamp){
         
     }
     return false;
+}
+
+userInfo.methods.createPasswordResetToken = function() {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    console.log({resetToken}, this.passwordResetToken);
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 }
 
 

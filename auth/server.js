@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use("/auth", route);
+app.use("/", route);
 app.use(apiRouter);
 
 startServices()
