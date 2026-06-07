@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 import User from './userModel.js';
 import sendEmail from './email.js';
+import crypto from 'crypto';
 
 export const signup = async (req, res, next) => {
     try{
@@ -72,7 +73,7 @@ const user = await User.findOne({email: req.body.email});
 if(!user){
      return res.status(404).json({
                 status: "error",
-                message: `No user with ${email}` 
+                message: `Will sent reset password to ${email} if it exist` 
             });
 }
 
@@ -112,6 +113,31 @@ try {
 
 }
 
-export const resetPassword = (req, res, next) => {
-    
+export const resetPassword = async (req, res, next) => {
+    // 1) getting user baed token 
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    // find a user with matching token that has not expired
+    const user = await User.findOne({passwordResetToken: hashedToken, passwordResetExpires: {$gt: Date.now()}})
+
+    // 2) if token has not expired and there is a user set a new password 
+    if(!user){
+        return  res.status(404).json({
+                status: "error",
+                message: `Password reset token is invalid or has expired`
+            });
+    }
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+ // 3) update changedPasswordAt proprty for the user
+
+ //4) log the user in send jwt 
+  const token = jwt.sign({id: user._id}, process.env.jwtSecret, {expiresIn: process.env.jwtExpiresIn});
+
+        res.status(200).json({
+            status: 'success',
+            token
+        });
 }

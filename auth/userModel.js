@@ -44,6 +44,10 @@ userInfo.pre('save', async function() {
     this.password = await bcryptjs.hash(this.password, 12);
     this.passwordChangedAt = new Date(Date.now() - 1000);
 })
+userInfo.pre('save', async function(){
+    if(!this.isModified("password") || this.isNew) return;
+    this.passwordChanged = Date.now() - 1000;
+})
 
 
 userInfo.methods.correctPassword = async function(candidatePassword, userPassword){
