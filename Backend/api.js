@@ -3,7 +3,7 @@ import express from "express";
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
 import {Client, GatewayIntentBits} from 'discord.js';
-import { requireLogin, restrictTo } from "../auth/authMiddleware.js";
+import { requireLogin, restrictTo } from "./middleware/authMiddleware.js";
 
 const router = express.Router();
 const uri = process.env.MONGO_URI;
