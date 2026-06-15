@@ -1,42 +1,8 @@
-#login{
-    border-style: outset;
-    border-color: red;
-    border-width: 10px;
-    width: 50%;
-    margin: 40px auto 0;
-    overflow: hidden;
-    background-color: black;
-    color: red;
-    
-
-}
-#ebox{
-    display: block;
-    margin-bottom: 10px;
-    
+body{
+display: flex;
+  justify-content: center; /* centers left/right */
+  align-items: center; 
+  min-height: 100vh;
 }
 
-#pbox{
-    display: block;
-}
 
-#login input{
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-button{
-width: 25%;
-
-}
- button:hover{
-    background-color: grey;
- }
- #help{
-    color: red;
- }
-
- #help:hover{
-    color: darkred;
- }
