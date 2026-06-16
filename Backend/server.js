@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from "express";
 import route from "./routes/route.js";
+import userRoute from "./routes/userRoutes.js"
 import apiRouter, { startServices } from "./api.js";
 
 const app = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 
 app.use("/", route);
 app.use(apiRouter);
+app.use('/', userRoute)
 
 startServices()
   .then(() => {
