@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from "express";
-import route from "../Backend/routes/route.js";
-import apiRouter, { startServices } from "../Backend/api.js";
+import route from "./routes/route.js";
+import apiRouter, { startServices } from "./api.js";
 
 const app = express();
 const port = process.env.PORT || 3000;

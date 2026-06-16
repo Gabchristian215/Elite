@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import User from '../models/userModel.js';
-import sendEmail from '../../auth/email.js';
+import sendEmail from '../utils/email.js';
 import crypto from 'crypto';
 
 export const signup = async (req, res, next) => {
