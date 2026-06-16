@@ -9,34 +9,34 @@
     </style>
 </head>
 <body>
-    
-    <form>
-        <!--add picture on top -->
-<div id="login-container">
-    
-    <div id="login-card">
-        <label for="first"></label>
-     <input type="text" id="first" name="first"
-     placeholder="Enter Your Email">
-    
-   <div class="space"></div>
-     
-     <label for="password"></label>
-     <input text="password" id="password" name="password"
-     placeholder="Enter your Password">
-     
-     <button>Log In</button>
-      <p>
-          <a id="help" href="#" >Forgot Password or Email</a>
-      </p>
+    <div class="login-box">
+        <div class="login-header">
+         <header>Login</header>
+        </div>
+        
+        <div class="input-box">
+            <input type="text" class="input-field" placeholder="Email" autocomplete="off" required>
+        </div>
+        <div class="input-box">
+            <input type="password" class="input-field" placeholder="password" autocomplete="off" required>
+        </div>
+
+        <div class="forgot">
+            <section>
+                <input type="checkbox" id="check">
+                <label for="check">Remember Me</label>
+            </section>
+        </div>
+        
+        <div class="input-submit">
+            <button class="submit-btn" id="submit">Sign In</button>
+        </div>
+
+        <div class="sign-up-link">
+            <p>Dont have an account? <a href=#>Sign Up</a></p>
+        </div>
+
     </div>
-</div>
 
-    
-
-
-
-
-    </form>
 </body>
 </html>
