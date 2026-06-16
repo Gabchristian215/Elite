@@ -3,6 +3,12 @@ import User from '../models/userModel.js';
 import sendEmail from '../utils/email.js';
 import crypto from 'crypto';
 
+const signToken = id => jwt.sign(
+    {id},
+    process.env.jwtSecret,
+    {expiresIn: process.env.jwtExpiresIn}
+);
+
 export const signup = async (req, res, next) => {
     try{
         const newUser = await User.create({
@@ -11,15 +17,8 @@ export const signup = async (req, res, next) => {
             email: req.body.email
         });
 
-        const token = jwt.sign({id:newUser._id}, process.env.jwtSecret, {expiresIn:process.env.jwtExpiresIn});
+        createSendToken(newUser, 201, res);
 
-        res.status(201).json({
-            status: 'success',
-            token,
-            data: {
-                user: newUser
-            }
-        });
     }catch(err){
         res.status(400).json({
             status: 'error',
@@ -50,12 +49,8 @@ export const login = async (req, res, next) => {
             });
         }
          //3) if everything is ok, send token to client
-        const token = jwt.sign({id: user._id}, process.env.jwtSecret, {expiresIn: process.env.jwtExpiresIn});
+        createSendToken(user, 200, res);
 
-        res.status(200).json({
-            status: 'success',
-            token
-        });
     } catch(err) {
         res.status(500).json({
             status: 'error',
@@ -64,6 +59,18 @@ export const login = async (req, res, next) => {
     }
     req.body = User
     next();
+};
+
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user._id);
+
+    res.status(statusCode).json({
+        status: "success",
+        token,
+        data: {
+            user
+        }
+    });
 };
 
 export const forgotPassword = async (req, res, next) => {
@@ -140,4 +147,46 @@ export const resetPassword = async (req, res, next) => {
             status: 'success',
             token
         });
+}
+export const updatePassword = async (req, res, next) => {
+    try {
+        const { passwordCurrent, password } = req.body;
+
+        if (!passwordCurrent || !password) {
+            return res.status(400).json({
+                status: "error",
+                message: "Please provide your current password and a new password"
+            });
+        }
+
+        // 1) get user from database
+        const user = await User.findById(req.user.id).select('+password');
+
+        if (!user) {
+            return res.status(404).json({
+                status: "error",
+                message: "user no longer exist"
+            });
+        }
+
+        // 2) check if current password is correct
+        if (!(await user.correctPassword(passwordCurrent, user.password))){
+            return res.status(400).json({
+                status: "error",
+                message: "invalid password"
+            });
+        }
+
+        // 3) update password
+        user.password = password;
+        await user.save()
+
+        // 4) log user in again and send token
+        createSendToken(user, 200, res);
+    } catch(err) {
+        res.status(500).json({
+            status: 'error',
+            message: err.message
+        });
+    }
 }

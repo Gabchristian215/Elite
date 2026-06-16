@@ -46,11 +46,12 @@ userInfo.pre('save', async function() {
 })
 userInfo.pre('save', async function(){
     if(!this.isModified("password") || this.isNew) return;
-    this.passwordChanged = Date.now() - 1000;
+    this.passwordChangedAt = Date.now() - 1000;
 })
 
 
-userInfo.methods.correctPassword = async function(candidatePassword, userPassword){
+userInfo.methods.correctPassword = async function(candidatePassword, userPassword = this.password){
+    if (!candidatePassword || !userPassword) return false;
     return await bcryptjs.compare(candidatePassword, userPassword);
 }
 
