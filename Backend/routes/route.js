@@ -6,7 +6,7 @@ import { signupValidation } from "../validator/authValidator.js";
 const route = express.Router();
 
 route.post("/signup", signupValidation, signup);
-route.post('/login', login);
+route.post('/login', signupValidation, login);
 
 route.post('/forgotPassword', forgotPassword);
 route.patch('/resetPassword/:token', resetPassword);
