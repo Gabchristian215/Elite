@@ -1,17 +1,8 @@
 import 'dotenv/config';
-import express from "express";
-import route from "./routes/route.js";
-import userRoute from "./routes/userRoutes.js"
-import apiRouter, { startServices } from "./api.js";
+import app from "./app.js";
+import { startServices } from "./api.js";
 
-const app = express();
 const port = process.env.PORT || 3000;
-
-app.use(express.json());
-
-app.use("/", route);
-app.use(apiRouter);
-app.use('/', userRoute)
 
 startServices()
   .then(() => {

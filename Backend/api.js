@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
-import {Client, GatewayIntentBits} from 'discord.js';
+import { Client, Intents } from "discord.js";
 import { requireLogin, restrictTo } from "./middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -171,7 +171,7 @@ async function run(limit = "5") {
 export async function startServices() {
   const botToken = process.env.DISCORD_BOT_TOKEN;
   const DISCORD_CHANNEL_ID = '1486736736162680934';
-  const discordClient = new Client({ intents: [GatewayIntentBits.Guilds] });
+  const discordClient = new Client({ intents: [Intents.FLAGS.GUILDS] });
   await discordClient.login(botToken);
   channel = await discordClient.channels.fetch(DISCORD_CHANNEL_ID);
 
