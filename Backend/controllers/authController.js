@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import User from '../models/userModel.js';
 import sendEmail from '../utils/email.js';
 import crypto from 'crypto';
+import { validationResult } from "express-validator";
 
 const signToken = id => jwt.sign(
     {id},
@@ -10,6 +11,13 @@ const signToken = id => jwt.sign(
 );
 
 export const signup = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()){
+        return res.status(400).json({
+            status: "failed",
+            errors: errors.array()
+        });
+    }
     try{
         const newUser = await User.create({
            username: req.body.username,
@@ -17,7 +25,7 @@ export const signup = async (req, res, next) => {
             email: req.body.email
         });
 
-        createSendToken(newUser, 201, res);
+       return createSendToken(newUser, 201, res);
 
     }catch(err){
         res.status(400).json({
@@ -49,7 +57,7 @@ export const login = async (req, res, next) => {
             });
         }
          //3) if everything is ok, send token to client
-        createSendToken(user, 200, res);
+       return createSendToken(user, 200, res); 
 
     } catch(err) {
         res.status(500).json({
@@ -57,9 +65,6 @@ export const login = async (req, res, next) => {
             message: err.message
         });
     }
-    req.body = User
-    next();
-
 };
 
 const createSendToken = (user, statusCode, res) => {
