@@ -1,16 +1,9 @@
-import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 
 
 
-
- const url = process.env.MONGO_URI;
-
-mongoose.connect(url, {dbName: 'elite'})
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((error) => console.error('Error connecting to MongoDB', error.message));
 
 const userInfo = new mongoose.Schema({
 username: {
