@@ -26,6 +26,14 @@ password: {
     required: true,
     select: false
 },
+profile: {
+    fullname: {
+        firstName: String,
+        lastName: String
+    },
+    city: String,
+    country: String
+},
 passwordChangedAt: Date,
 
 passwordResetToken: String,
