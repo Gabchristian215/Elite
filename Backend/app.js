@@ -5,7 +5,7 @@ import morgan from "morgan";
 import hpp from "hpp"
 import route from "./routes/route.js";
 import userRoute from "./routes/userRoutes.js";
-import apiRouter from "./api.js";
+import appRouter from "./routes/appRouter.js";
 
 const app = express();
 
@@ -32,7 +32,7 @@ app.use(hpp());
 app.use(limiter);
 
 app.use("/", route);
-app.use("/", apiRouter, limiter);
+app.use("/", appRouter);
 app.use("/", userRoute);
 
 export default app;

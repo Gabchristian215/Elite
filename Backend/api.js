@@ -1,11 +1,7 @@
 import 'dotenv/config';
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
-<<<<<<< HEAD
 import { Client, Intents } from "discord.js";
-=======
-import {Client, GatewayIntentBits} from 'discord.js';
->>>>>>> cca3e7d (Move app routes into router file)
 
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
