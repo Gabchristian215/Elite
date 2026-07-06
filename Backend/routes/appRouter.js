@@ -17,7 +17,7 @@ appRouter.get("/getSealed", requireLogin, async (req, res) => {
   }
 });
 
-appRouter.post("/saveDb", async (req, res) => {
+appRouter.post("/saveDb", requireLogin, async (req, res) => {
   try {
     const { set, limit = "5" } = req.body || {};
 
