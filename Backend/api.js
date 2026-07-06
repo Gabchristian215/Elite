@@ -1,11 +1,8 @@
 import 'dotenv/config';
-import express from "express";
 import cron from 'node-cron';
 import {MongoClient} from "mongodb";
 import { Client, Intents } from "discord.js";
-import { requireLogin, restrictTo } from "./middleware/authMiddleware.js";
 
-const router = express.Router();
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 const db = client.db("elite")
@@ -13,7 +10,7 @@ const collection = db.collection("products")
 
 let channel;
 
-async function getSealed(set, limit = "5") {
+export async function getSealed(set, limit = "5") {
   try {
     const response = await fetch(
       `https://www.pokemonpricetracker.com/api/v2/sealed-products?language=english&set=${set}&limit=${limit}`,
@@ -44,7 +41,7 @@ async function getSealed(set, limit = "5") {
 }
 
 
-async function saveData(product) {
+export async function saveData(product) {
   try {
     if (!Array.isArray(product) || product.length === 0) return;
     await collection.insertMany(product);
@@ -114,39 +111,6 @@ async function getAlert(targetId, items) {
 }
 
 
-router.get("/getSealed", requireLogin, async (req, res) => {
-  try {
-    const { set, limit = "5" } = req.query;
-    if (!set) {
-      return res.status(400).json({ error: "set query param is required" });
-    }
-    const product = await getSealed(set, limit);
-    res.json(product);
-  } catch (error) {
-    res.status(500).json({ error: error.message || "failed to fetch data" });
-  }
-})
-
-router.post("/saveDb", requireLogin, async (req, res) => {
-  try {
-    const { set, limit = "5" } = req.body || {};
-
-    if (!set) {
-      return res.status(400).json({ error: "set is required" });
-    }
-    const product = await getSealed(set, limit);
-    const productWithSetSlug = product.map(item => ({ ...item, setSlug: set }));
-
-    if (!Array.isArray(productWithSetSlug) || productWithSetSlug.length === 0) {
-      return res.status(400).json({ error: "No products found to save" });
-    }
-    await saveData(productWithSetSlug);
-    res.status(200).json({ message: "saved to Database" });
-  } catch(error) {
-    res.status(500).json({ error: error.message || "cannot save to Database" })
-  }
-})
-
 async function run(limit = "5") {
   const userSetSlugs = await collection.distinct("setSlug", {
     setSlug: { $exists: true, $ne: "" }
@@ -188,5 +152,3 @@ export async function startServices() {
     }
   });
 }
-
-export default router;
