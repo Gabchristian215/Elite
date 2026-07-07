@@ -2,7 +2,7 @@ import 'dotenv/config';
 import cron from 'node-cron';
 import { MongoClient } from "mongodb";
 import { Client, Intents } from "discord.js";
-import { getSealed } from "./controllers/appController.js";
+import { getSealed } from "../controllers/appController.js";
 
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
@@ -69,7 +69,6 @@ async function getAlert(targetId, items) {
     console.log('discord message was sent')
   }
 }
-
 
 async function run(limit = "5") {
   const userSetSlugs = await collection.distinct("setSlug", {
