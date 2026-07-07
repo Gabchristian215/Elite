@@ -1,5 +1,5 @@
 import express from "express";
-import { getSealed, saveData } from "../api.js";
+import { getSealed, saveData } from "../controllers/appController.js";
 import { requireLogin } from "../middleware/authMiddleware.js";
 
 const appRouter = express.Router();
