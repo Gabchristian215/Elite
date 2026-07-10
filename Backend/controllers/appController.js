@@ -1,9 +1,4 @@
-import { MongoClient } from "mongodb";
-
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
-const db = client.db("elite");
-const collection = db.collection("products");
+import Product from "../models/productSchema.js";
 
 export async function getSealed(set, limit = "5") {
   try {
@@ -38,8 +33,7 @@ export async function getSealed(set, limit = "5") {
 export async function saveData(product) {
   try {
     if (!Array.isArray(product) || product.length === 0) return;
-    await client.connect();
-    await collection.insertMany(product);
+    await Product.insertMany(product);
     console.log("DATA SAVED!!");
   } catch (error) {
     console.error(error);
