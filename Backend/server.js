@@ -5,7 +5,8 @@ import connectDB from "./config/db.js";
 
 const port = process.env.PORT || 3000;
 
-Promise.all([connectDB(), startServices()])
+connectDB()
+  .then(() => startServices())
   .then(() => {
     app.listen(port, () => {
       console.log(`server is running on ${port}`);

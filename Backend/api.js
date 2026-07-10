@@ -1,12 +1,7 @@
 import 'dotenv/config';
 import cron from 'node-cron';
-import {MongoClient} from "mongodb";
 import { Client, Intents } from "discord.js";
-
-const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
-const db = client.db("elite")
-const collection = db.collection("products")
+import Product from "./models/productSchema.js";
 
 let channel;
 
@@ -44,7 +39,7 @@ export async function getSealed(set, limit = "5") {
 export async function saveData(product) {
   try {
     if (!Array.isArray(product) || product.length === 0) return;
-    await collection.insertMany(product);
+    await Product.insertMany(product);
     console.log("DATA SAVED!!")
   } catch(error){
     console.error(error);
@@ -52,7 +47,7 @@ export async function saveData(product) {
 }
 
 async function comparePrices(targetId, items){
-  const oldItem = await collection.findOne({ tcgPlayerId: targetId });
+  const oldItem = await Product.findOne({ tcgPlayerId: String(targetId) });
 
   if (!oldItem) {
     console.log("Item not found in DB");
@@ -81,7 +76,7 @@ async function comparePrices(targetId, items){
   }
 
   if (oldPrice !== newPrice) {
-    await collection.updateOne(
+    await Product.updateOne(
       { tcgPlayerId: String(targetId) },
       { $set: { price: newPrice } }
     );
@@ -89,7 +84,7 @@ async function comparePrices(targetId, items){
 }
 
 async function getAlert(targetId, items) {
-  const oldItem = await collection.findOne({ tcgPlayerId: targetId });
+  const oldItem = await Product.findOne({ tcgPlayerId: String(targetId) });
   if (!oldItem) {
     console.log("Item not found in DB");
     return;
@@ -112,7 +107,7 @@ async function getAlert(targetId, items) {
 
 
 async function run(limit = "5") {
-  const userSetSlugs = await collection.distinct("setSlug", {
+  const userSetSlugs = await Product.distinct("setSlug", {
     setSlug: { $exists: true, $ne: "" }
   });
 
@@ -123,7 +118,7 @@ async function run(limit = "5") {
 
   for (const setSlug of userSetSlugs) {
     const items = await getSealed(setSlug, limit);
-    const savedProducts = await collection.find({ setSlug }).toArray();
+    const savedProducts = await Product.find({ setSlug });
 
     for (const savedProduct of savedProducts) {
       await comparePrices(savedProduct.tcgPlayerId, items);
@@ -138,9 +133,6 @@ export async function startServices() {
   const discordClient = new Client({ intents: [Intents.FLAGS.GUILDS] });
   await discordClient.login(botToken);
   channel = await discordClient.channels.fetch(DISCORD_CHANNEL_ID);
-
-  await client.connect();
-  console.log("Mongo connected");
 
   await run("5");
 
