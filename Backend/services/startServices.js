@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import cron from 'node-cron';
+<<<<<<< HEAD:Backend/api.js
 import { Client, Intents } from "discord.js";
 import Product from "./models/productSchema.js";
 
@@ -46,6 +47,19 @@ export async function saveData(product) {
   }
 }
 
+=======
+import { MongoClient } from "mongodb";
+import { Client, Intents } from "discord.js";
+import { getSealed } from "../controllers/appController.js";
+
+const uri = process.env.MONGO_URI;
+const client = new MongoClient(uri);
+const db = client.db("elite")
+const collection = db.collection("products")
+
+let channel;
+
+>>>>>>> f70471e68c9ee59eccb29f3ec5066ca703ecb3b3:Backend/services/startServices.js
 async function comparePrices(targetId, items){
   const oldItem = await Product.findOne({ tcgPlayerId: String(targetId) });
 
@@ -104,7 +118,6 @@ async function getAlert(targetId, items) {
     console.log('discord message was sent')
   }
 }
-
 
 async function run(limit = "5") {
   const userSetSlugs = await Product.distinct("setSlug", {
