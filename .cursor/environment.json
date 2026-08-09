@@ -1,0 +1,19 @@
+{
+  "name": "Elite - Resell Alert System",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "server",
+      "command": "npm run dev",
+      "description": "Elite Express API (nodemon Backend/server.js) on port 3000. Requires DISCORD_BOT_TOKEN (and optionally Poke_API) from the Secrets panel to fully boot, since startServices() logs into Discord before app.listen()."
+    }
+  ],
+  "ports": [
+    {
+      "name": "api",
+      "port": 3000
+    }
+  ]
+}
