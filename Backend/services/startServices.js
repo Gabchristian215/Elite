@@ -5,7 +5,8 @@ import { getSealed } from "../controllers/appController.js";
 import Product from "../models/productSchema.js";
 
 let channel;
-async function comparePrices(targetId, items){
+async function checkPriceAndAlert(savedProduct, items){
+  const targetId = savedProduct.tcgPlayerId;
   const oldItem = await Product.findOne({ tcgPlayerId: String(targetId) });
 
   if (!oldItem) {
@@ -35,32 +36,15 @@ async function comparePrices(targetId, items){
   }
 
   if (oldPrice !== newPrice) {
-    await Product.updateOne(
+    console.log('about to send message...')
+    if (channel) {
+      await channel.send(`${freshItem.name} is now ${newPrice}`);
+      console.log('discord message was sent')
+    }
+    await Product.updateMany(
       { tcgPlayerId: String(targetId) },
       { $set: { price: newPrice } }
     );
-  }
-}
-
-async function getAlert(targetId, items) {
-  const oldItem = await Product.findOne({ tcgPlayerId: String(targetId) });
-  if (!oldItem) {
-    console.log("Item not found in DB");
-    return;
-  }
-  const freshItem = items.find(
-    item => String(item.tcgPlayerId) === String(targetId));
-  if (!freshItem) {
-    const apiIds = items.map(item => String(item.tcgPlayerId)).slice(0, 20).join(", ");
-    console.log(`Fresh API item not found. DB tcgPlayerId=${targetId}; API tcgPlayerIds(sample)=[${apiIds}]`);
-    return;
-  }
-  const oldPrice = oldItem.price;
-  const newPrice = freshItem.unopenedPrice ?? freshItem.price;
-  if (oldPrice !== newPrice) {
-    console.log('about to send message...')
-    await channel.send(`ETB is now ${newPrice}`);
-    console.log('discord message was sent')
   }
 }
 
@@ -74,13 +58,22 @@ async function run(limit = "5") {
     return;
   }
 
+  const processedTcgPlayerIds = new Set();
+
   for (const setSlug of userSetSlugs) {
     const items = await getSealed(setSlug, limit);
-    const savedProducts = await Product.find({ setSlug });
+    const savedProducts = await Product.find({ setSlug }).lean();
+    const uniqueSavedProducts = [
+      ...new Map(savedProducts.map(item => [String(item.tcgPlayerId), item])).values()
+    ];
 
-    for (const savedProduct of savedProducts) {
-      await comparePrices(savedProduct.tcgPlayerId, items);
-      await getAlert(savedProduct.tcgPlayerId, items);
+    for (const savedProduct of uniqueSavedProducts) {
+      const tcgPlayerId = String(savedProduct.tcgPlayerId);
+      if (processedTcgPlayerIds.has(tcgPlayerId)) {
+        continue;
+      }
+      processedTcgPlayerIds.add(tcgPlayerId);
+      await checkPriceAndAlert(savedProduct, items);
     }
   }
 }

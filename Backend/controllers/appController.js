@@ -30,12 +30,44 @@ export async function getSealed(set, limit = "5") {
   }
 }
 
+export function normalizeProduct(item, setSlug) {
+  const tcgPlayerId = item.tcgPlayerId == null ? undefined : String(item.tcgPlayerId);
+
+  return {
+    name: item.name,
+    setName: item.setName,
+    setSlug,
+    price: item.unopenedPrice ?? item.price,
+    image: item.imageCdnUrl200 ?? item.image,
+    url: item.tcgPlayerUrl ?? item.url,
+    tcgPlayerId,
+    id: item.id
+  };
+}
+
 export async function saveData(product) {
   try {
     if (!Array.isArray(product) || product.length === 0) return;
-    await Product.insertMany(product);
+    const uniqueProducts = [
+      ...new Map(
+        product
+          .filter(item => item.tcgPlayerId != null)
+          .map(item => [String(item.tcgPlayerId), item])
+      ).values()
+    ];
+    if (uniqueProducts.length === 0) return;
+    await Product.bulkWrite(
+      uniqueProducts.map(item => ({
+        updateOne: {
+          filter: { tcgPlayerId: String(item.tcgPlayerId) },
+          update: { $set: { ...item, tcgPlayerId: String(item.tcgPlayerId) } },
+          upsert: true
+        }
+      }))
+    );
     console.log("DATA SAVED!!");
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }

@@ -20,6 +20,7 @@ const productSchema = new mongoose.Schema(
     tcgPlayerId: {
       type: String,
       required: true,
+      unique: true,
       index: true
     },
     id: String
