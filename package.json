@@ -2,7 +2,10 @@
   "type": "module",
   "scripts": {
     "start": "node Backend/server.js",
-    "dev": "nodemon Backend/server.js"
+    "dev": "nodemon Backend/server.js",
+    "client": "npm --prefix client run dev",
+    "client:install": "npm --prefix client install",
+    "client:build": "npm --prefix client run build"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

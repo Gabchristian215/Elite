@@ -41,6 +41,15 @@ export const updateMe = async (req, res, next) => {
   });
 }
 
+export const getMe = (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: req.user
+    }
+  });
+};
+
 // Basic User Controller Functions
 export const getAllUsers = async (req, res, next) => {
   const users = await User.find();

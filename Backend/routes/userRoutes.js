@@ -1,5 +1,5 @@
 import express from "express"
-import { getAllUsers, getUser, updateMe, deleteMe, updateUser, deleteUser} from "../controllers/userController.js"
+import { getMe, getAllUsers, getUser, updateMe, deleteMe, updateUser, deleteUser} from "../controllers/userController.js"
 import { requireLogin, restrictTo } from "../middleware/authMiddleware.js";
 
 
@@ -8,6 +8,7 @@ import { requireLogin, restrictTo } from "../middleware/authMiddleware.js";
 
 const userRoute = express.Router();
 
+userRoute.get('/me', requireLogin, getMe);
 userRoute.patch('/updateMe', requireLogin, updateMe);
 userRoute.delete("/deleteMe", requireLogin, deleteMe);
 

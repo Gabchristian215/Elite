@@ -1,6 +1,7 @@
 import express from "express";
 import { getSealed, normalizeProduct, saveData } from "../controllers/appController.js";
 import { requireLogin } from "../middleware/authMiddleware.js";
+import Product from "../models/productSchema.js";
 
 const appRouter = express.Router();
 
@@ -67,6 +68,27 @@ appRouter.post("/saveDb", requireLogin, async (req, res) => {
     });
   } catch(error) {
     res.status(500).json({ error: error.message || "cannot save to Database" });
+  }
+});
+
+appRouter.get("/products", requireLogin, async (req, res) => {
+  try {
+    const products = await Product.find().sort({ updatedAt: -1 }).lean();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message || "failed to load products" });
+  }
+});
+
+appRouter.delete("/products/:tcgPlayerId", requireLogin, async (req, res) => {
+  try {
+    const result = await Product.deleteMany({ tcgPlayerId: String(req.params.tcgPlayerId) });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message || "failed to remove product" });
   }
 });
 
