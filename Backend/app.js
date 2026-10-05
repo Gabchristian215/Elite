@@ -11,12 +11,23 @@ const app = express();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 3,
+  limit: 300,
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
     status: "error",
     message: "Too many requests. Please try again later.",
+  },
+});
+// stricter limit for credential endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    status: "error",
+    message: "Too many login attempts. Please try again later.",
   },
 });
 app.use(helmet());
@@ -30,6 +41,7 @@ app.use(hpp());
 
 
 app.use(limiter);
+app.use(["/login", "/signup", "/forgotPassword"], authLimiter);
 
 app.use("/", route);
 app.use("/", appRouter);
